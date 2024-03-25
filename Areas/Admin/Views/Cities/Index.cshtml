@@ -1,0 +1,123 @@
+﻿@model IEnumerable<MVCCORE_EXAMPORTAL_Final.Models.Tblcity>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/AdminLayout.cshtml";
+}
+
+
+<style>
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #007BFF;
+        color: #fff;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border: none;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #007BFF;
+        color: #fff;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $("#btnsubmit").click(function () {
+            AddCityData();
+        })
+    })
+
+    function AddCityData() {
+        var n = $("#txtname").val();
+        var city = { "CityName": n };
+
+        $.ajax({
+            url: '/Admin/Cities/AddCityData',
+            method: 'post',
+            data: JSON.stringify(city),
+            contentType: 'application/json',
+            success: function (resp) {
+                console.log(resp);
+                alert(resp);
+                window.location.href = "/Admin/Cities/Index";
+            }
+        });
+
+        cleardata();
+    }
+
+    function cleardata() {
+        $("#txtname").val("");
+    }
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Add City</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label>City Name</label>
+                        <input type="text" id="txtname" class="form-control" />
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <input type="button" value="Submit" id="btnsubmit" class="btn btn-success" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Sr No</th>
+                        <th>City Name</th>
+                    </tr>
+                </thead>
+                <tbody id="tbldata">
+                    @{
+                        int i = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@item.CityName</td>
+                        </tr>
+                        i++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

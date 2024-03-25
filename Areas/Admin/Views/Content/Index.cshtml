@@ -1,0 +1,177 @@
+﻿@model IEnumerable<MVCCORE_EXAMPORTAL_Final.Models.TblTopicContent>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/AdminLayout.cshtml";
+}
+<html>
+<head>
+<style>
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #007BFF;
+        color: #fff;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn-primary {
+        background-color: #007BFF;
+        border: none;
+    }
+
+    .btn-update {
+        background-color: #ffc107;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #007BFF;
+        color: #fff;
+    }
+
+    tbody tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+</style>
+
+<h2>Add TopicContent</h2>
+    <script>
+        var content = [];
+
+        $(document).ready(function () {
+            FetchTopic();
+            $("#btnadd").click(function () {
+                Filltable();
+            });
+            $("#btnsubmit").click(function () {
+                AddContentData();
+            });
+        });
+
+        function Filltable() {
+            var cname = $("#txtname").val();
+            var t = { "ContentName": cname };
+            content.push(t);
+            Display();
+        }
+
+        function Display() {
+            $("#tbldata").empty();
+            $.each(content, function (i, d) {
+                $("#tbldata").append("<tr><td>" + (i + 1) + "</td><td>" + d.ContentName + "</td></tr>");
+            });
+        }
+
+        function AddContentData() {
+            var ts = $("#txtname").val();
+            var t = $("#ddtopic").val();
+            var st = { "ContentName": ts, "TopicId": t };
+
+            $.ajax({
+                url: '/Admin/Content/AddContentData',
+                method: 'post',
+                data: JSON.stringify(st),
+                contentType: 'application/json',
+                success: function (resp) {
+                    alert(resp);
+                    console.log(resp);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+                }
+            });
+        }
+
+        function FetchTopic() {
+            $.ajax({
+                url: '/Admin/Topic/GetTopic',
+                method: 'get',
+                contentType: 'application/json',
+                success: function (resp) {
+                    console.log(resp);
+                    $.each(resp, function (i, d) {
+                        $("#ddtopic").append("<option value='" + d.TopicId + "'>" + d.TopicName + "</option>");
+                    });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("Error: " + errorThrown);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Content Details</h4>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="mb-3">
+                            <label for="txtname">Content Name</label>
+                            <input type="text" id="txtname" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="ddtopic">Topic Name</label>
+                                <select id="ddtopic" class="form-control">
+                                    <option selected disabled>Select topic</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-primary" id="btnsubmit">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sr No</th>
+                            <th>Content Name</th>
+                            <th>Topic Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int i = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@item.ContentName</td>
+                                <td>@item.Topic.TopicName</td>
+
+                            </tr>
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
